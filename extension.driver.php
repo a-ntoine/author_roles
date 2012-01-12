@@ -252,6 +252,26 @@ Class extension_author_roles extends Extension
 					{
 						// Only get the ID's of the current author to begin with:
 						$results = Symphony::Database()->fetch('SELECT `id` FROM `tbl_entries` WHERE `author_id` = '.$id_author.';');
+						
+						$author_fields = Symphony::Database()->fetch('SELECT `id` FROM `tbl_fields` WHERE `type` = "author";');
+						
+						$fields_results = array();
+						
+						foreach($author_fields as $field){
+							$fields_results[] = Symphony::Database()->fetch('SELECT `entry_id` AS `id` FROM `tbl_entries_data_'.$field['id'].'` WHERE `author_id` = '.$id_author.';');
+						}
+						
+						foreach ($fields_results as $fields_result)
+						{
+							foreach ($fields_result as $field_result)
+							{
+								if(!in_array($field_result, $results))
+								{
+									$results[] = $field_result;
+								}
+							}
+						}
+						
 					} else {
 						// Get all the ID's:
 						$results = Symphony::Database()->fetch('SELECT `id` FROM `tbl_entries`;');
